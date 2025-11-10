@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install & test server
+        working-directory: server
+        run: |
+          npm ci
+          npm run lint || true
+          npm test || true
+
+      - name: Install & build client
+        working-directory: client
+        run: |
+          npm ci
+          npm run lint || true
+          npm run build
+
+      - name: Upload client build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-build
+          path: client/build

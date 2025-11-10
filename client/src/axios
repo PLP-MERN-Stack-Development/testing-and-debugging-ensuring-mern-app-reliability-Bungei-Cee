@@ -1,0 +1,27 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+const App = () => {
+  const [data, setData] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/test");
+        setData(res.data.message);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <div>
+      <h1>Backend says: {data}</h1>
+    </div>
+  );
+};
+
+export default App;
